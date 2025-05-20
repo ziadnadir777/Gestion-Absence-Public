@@ -18,13 +18,14 @@ stage('SonarQube Scan') {
   }
   steps {
     withSonarQubeEnv('SonarQube-Server') {
-      dir("${env.WORKSPACE}") {
+      dir("${env.WORKSPACE}") { // <== forces correct working directory
         sh '''
-          echo "📁 Current directory content:"
+          echo "🗂 Verifying we're in the repo root:"
+          pwd
           ls -la
 
-          echo "📄 Contents of sonar-project.properties:"
-          cat sonar-project.properties || echo "❌ sonar-project.properties not found!"
+          echo "📄 Showing sonar-project.properties:"
+          cat sonar-project.properties || echo "❌ Not found!"
 
           echo "🚀 Running Sonar Scanner..."
           ${SONAR_SCANNER_HOME}/bin/sonar-scanner -Dsonar.login=$SONAR_TOKEN
