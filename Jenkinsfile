@@ -71,11 +71,11 @@ pipeline {
         }
       }
   }
+  }
 
   post {
     always {
       echo '✅ Pipeline finished.'
     }
   }
-}
 }
