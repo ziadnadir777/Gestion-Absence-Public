@@ -2,12 +2,11 @@ pipeline {
   agent any
 
   tools {
-    nodejs 'node-18' // Defined in Jenkins global config
+    nodejs 'node-18' // Make sure NodeJS is configured in Jenkins
   }
 
   environment {
-    SONAR_SCANNER_HOME = tool 'SonarScanner' // Defined in Jenkins global config
-    SONAR_TOKEN = credentials('SONAR_TOKEN') // Your SonarQube token ID in Jenkins credentials
+    SONAR_TOKEN = credentials('sonarqube-token') // ID stored in Jenkins credentials
   }
 
   options {
@@ -54,23 +53,26 @@ pipeline {
     stage('Sonar Analysis') {
       steps {
         withSonarQubeEnv('SonarQube-Server') {
-          dir('.') {
-            sh '''
-              echo "🚀 Running SonarQube Scanner..."
-              ${SONAR_SCANNER_HOME}/bin/sonar-scanner -Dsonar.login=$SONAR_TOKEN
-            '''
-          }
+          sh '''
+            echo "🚀 Running SonarQube Scanner..."
+            sonar-scanner -Dsonar.login=$SONAR_TOKEN
+          '''
+        }
+      }
+    }
+
+    stage('Sonar Quality Gate') {
+      steps {
+        timeout(time: 2, unit: 'MINUTES') {
+          waitForQualityGate abortPipeline: true
         }
       }
     }
   }
 
   post {
-    success {
-      echo '✅ Pipeline finished successfully.'
-    }
-    failure {
-      echo '❌ Pipeline failed.'
+    always {
+      echo '✅ Pipeline finished.'
     }
   }
 }
