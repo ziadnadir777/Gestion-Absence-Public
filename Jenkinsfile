@@ -3,7 +3,7 @@ pipeline {
 
   tools {
     nodejs 'node-18' // Defined in Jenkins global config
-    sonarRunner 'SonarScanner'
+    //sonarRunner 'SonarScanner'
   }
 
   environment {
