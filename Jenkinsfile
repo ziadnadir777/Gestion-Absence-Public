@@ -12,14 +12,20 @@ pipeline {
         git credentialsId: 'Abdounm1', url: 'https://github.com/Abdoun1m/Gestion-Absence.git'
       }
     }
-
-   stage('SonarQube Scan') {
+stage('SonarQube Scan') {
   environment {
     SONAR_TOKEN = credentials('sonarqube-token')
   }
   steps {
     withSonarQubeEnv('SonarQube-Server') {
-      sh '${SONAR_SCANNER_HOME}/bin/sonar-scanner'
+      sh '''
+        ${SONAR_SCANNER_HOME}/bin/sonar-scanner \
+        -Dsonar.projectKey=FullStackApp \
+        -Dsonar.sources=. \
+        -Dsonar.inclusions=Back_end/**/*.py,Front_end/**/*.ts,Front_end/**/*.tsx \
+        -Dsonar.host.url=$SONAR_HOST_URL \
+        -Dsonar.login=$SONAR_TOKEN
+      '''
     }
   }
 }
