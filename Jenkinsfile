@@ -20,14 +20,7 @@ pipeline {
   steps {
     withSonarQubeEnv('SonarQube-Server') {
       dir('back_end') {
-        sh '''
-          ${SONAR_SCANNER_HOME}/bin/sonar-scanner \
-            -Dsonar.projectKey=FlaskApp \
-            -Dsonar.sources=. \
-            -Dsonar.inclusions=**/*.py \
-            -Dsonar.language=py \
-            -Dsonar.login=$SONAR_TOKEN
-        '''
+        sh '${SONAR_SCANNER_HOME}/bin/sonar-scanner'
       }
     }
   }
