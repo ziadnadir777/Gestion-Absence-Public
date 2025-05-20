@@ -1,6 +1,8 @@
 pipeline {
   agent any
-
+  tools {
+    nodejs 'node-18'
+  }
   environment {
     SONAR_TOKEN = credentials('sonarqube-token')        // Your Sonar token ID in Jenkins credentials
     SONAR_SCANNER = tool name: 'SonarScanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
@@ -25,7 +27,12 @@ pipeline {
         checkout scm
       }
     }
-
+    stage('Check Node') {
+      steps {
+        sh 'node -v'
+        sh 'npm -v'
+      }
+    }
     stage('Verify Workspace') {
       steps {
         sh '''
