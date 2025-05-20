@@ -8,7 +8,7 @@ pipeline {
   environment {
     SONAR_SCANNER_HOME = tool 'SonarScanner'
     SONAR_TOKEN = credentials('sonarqube-token')
-    NVD_API_KEY = credentials('nvd_api_key')
+    NVD_API_KEY = credentials('nvd-api-key')
 
   }
 
