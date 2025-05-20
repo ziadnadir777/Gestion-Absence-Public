@@ -19,7 +19,7 @@ pipeline {
   }
   steps {
     withSonarQubeEnv('SonarQube-Server') {
-      dir('back_end') {
+      dir('Back_end') {
         sh '''
           echo "--- WORKSPACE CONTENTS ---"
           ls -R
