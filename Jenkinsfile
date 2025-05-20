@@ -2,37 +2,77 @@ pipeline {
   agent any
 
   environment {
-    SONAR_SCANNER_HOME = tool 'SonarScanner'           // Tool name from Global Tool Config
-    SONAR_TOKEN = credentials('sonarqube-token')       // Secret text credential ID
+    SONAR_TOKEN = credentials('sonarqube-token')        // Your Sonar token ID in Jenkins credentials
+    SONAR_SCANNER = tool name: 'SonarScanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+  }
+
+  triggers {
+    githubPush()
+  }
+
+  options {
+    skipDefaultCheckout true
+    timestamps()
   }
 
   stages {
-    stage('Checkout') {
+
+    stage('Checkout Main Branch') {
+      when {
+        branch 'main'
+      }
       steps {
-        git credentialsId: 'Abdounm1', url: 'https://github.com/Abdoun1m/Gestion-Absence.git'
+        checkout scm
       }
     }
-stage('SonarQube Scan') {
-  environment {
-    SONAR_TOKEN = credentials('sonarqube-token')
-  }
-  steps {
-    withSonarQubeEnv('SonarQube-Server') {
-      dir("${env.WORKSPACE}") { // <== forces correct working directory
+
+    stage('Verify Workspace') {
+      steps {
         sh '''
-          echo "🗂 Verifying we're in the repo root:"
-          pwd
+          echo "📂 Current path: $(pwd)"
+          echo "📄 Listing files:"
           ls -la
-
-          echo "📄 Showing sonar-project.properties:"
-          cat sonar-project.properties || echo "❌ Not found!"
-
-          echo "🚀 Running Sonar Scanner..."
-          ${SONAR_SCANNER_HOME}/bin/sonar-scanner -Dsonar.login=$SONAR_TOKEN
         '''
       }
     }
+
+    stage('Show Sonar Properties') {
+      steps {
+        sh '''
+          echo "🔍 sonar-project.properties content:"
+          if [ -f sonar-project.properties ]; then
+            cat sonar-project.properties
+          else
+            echo "❌ sonar-project.properties not found!"
+            exit 1
+          fi
+        '''
+      }
+    }
+
+    stage('Sonar Analysis') {
+      when {
+        branch 'main'
+      }
+      steps {
+        withSonarQubeEnv('SonarQube-Server') {
+          dir("${env.WORKSPACE}") {
+            sh '''
+              echo "🚀 Running SonarQube Scanner..."
+              ${SONAR_SCANNER}/bin/sonar-scanner -Dsonar.login=$SONAR_TOKEN
+            '''
+          }
+        }
+      }
+    }
   }
-}
+
+  post {
+    always {
+      echo '✅ Pipeline finished.'
+    }
+    failure {
+      echo '❌ Pipeline failed.'
+    }
   }
 }
