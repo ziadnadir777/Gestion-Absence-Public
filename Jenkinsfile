@@ -2,12 +2,14 @@ pipeline {
   agent any
 
   tools {
-    nodejs 'node-18' // Only NodeJS is declared here
+    nodejs 'node-18' // NodeJS
   }
 
   environment {
     SONAR_SCANNER_HOME = tool 'SonarScanner'
     SONAR_TOKEN = credentials('sonarqube-token')
+    NVD_API_KEY = credentials('NVD_API_KEY')
+
   }
 
   options {
@@ -36,9 +38,12 @@ pipeline {
               echo "🔍 Running OWASP Dependency Check..."
               dependency-check.sh \
                 --project GestionAbsenceApp \
-                --scan . \
+                --scan Front_end/package.json \
+                --scan Back_end/requirements.txt \
                 --format HTML \
-                --out owasp-report
+                --out owasp-report \
+                --nvdApiKey ${NVD_API_KEY} \
+                --data /var/jenkins_home/odc-data
             '''
           }
         }
