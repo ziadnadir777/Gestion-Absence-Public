@@ -2,39 +2,31 @@ pipeline {
   agent any
 
   environment {
-    IMAGE_NAME = 'flask-backend'
+    SONAR_SCANNER_HOME = tool 'SonarScanner'
+    SONAR_TOKEN = credentials('sonarqube-token')
   }
 
   stages {
     stage('Checkout') {
       steps {
-        git credentialsId: 'github_token', url: 'https://github.com/Abdoun1m/Gestion-Absence.git'
+        git credentialsId: 'github-token', url: 'https://github.com/Abdoun1m/Gestion-Absence.git'
       }
     }
 
-    stage('Build Docker Image') {
+    stage('SonarQube Scan') {
       steps {
-        dir('back_end') {
-          sh 'docker build -t $IMAGE_NAME .'
+        withSonarQubeEnv('SonarQube-Server') {
+          dir('back_end') {
+            sh '''
+              ${SONAR_SCANNER_HOME}/bin/sonar-scanner \
+              -Dsonar.projectKey=FlaskApp \
+              -Dsonar.sources=. \
+              -Dsonar.host.url=$SONAR_HOST_URL \
+              -Dsonar.login=$SONAR_TOKEN
+            '''
+          }
         }
       }
-    }
-
-    stage('Run & Test') {
-      steps {
-        sh '''
-          docker rm -f flask_container || true
-          docker run -d --name flask_container -p 5000:5000 $IMAGE_NAME
-          sleep 5
-          curl -X POST http://localhost:5000/api/login || true
-        '''
-      }
-    }
-  }
-
-  post {
-    always {
-      sh 'docker rm -f flask_container || true'
     }
   }
 }
