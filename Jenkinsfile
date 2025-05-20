@@ -6,6 +6,7 @@ pipeline {
   }
 
   environment {
+    SONAR_SCANNER_HOME = tool 'SonarScanner'
     SONAR_TOKEN = credentials('sonarqube-token') // ID stored in Jenkins credentials
   }
 
