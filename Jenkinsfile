@@ -56,7 +56,7 @@ pipeline {
         withSonarQubeEnv('SonarQube-Server') {
           sh '''
             echo "🚀 Running SonarQube Scanner..."
-            sonar-scanner -Dsonar.login=$SONAR_TOKEN
+            ${SONAR_SCANNER_HOME}/bin/sonar-scanner -Dsonar.login=$SONAR_TOKEN
           '''
         }
       }
