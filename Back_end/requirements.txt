@@ -1,0 +1,8 @@
+Flask
+pytest
+flake8
+gunicorn
+hashlib
+json
+datetime
+sqlite3
