@@ -2,8 +2,7 @@ pipeline {
   agent any
 
   tools {
-    nodejs 'node-18'
-    dependencyCheck 'dependency-Check'
+    nodejs 'node-18' // Only NodeJS is declared here
   }
 
   environment {
@@ -30,15 +29,18 @@ pipeline {
 
     stage('OWASP Dependency Check') {
       steps {
-        withEnv(["PATH+DC=${tool 'dependency-Check'}/bin"]) {
-          sh '''
-            echo "🔍 Running OWASP Dependency Check..."
-            dependency-check.sh \
-              --project GestionAbsenceApp \
-              --scan . \
-              --format HTML \
-              --out owasp-report
-          '''
+        script {
+          def dcHome = tool name: 'dependency-Check', type: 'org.jenkinsci.plugins.DependencyCheck.tools.DependencyCheckInstallation'
+          withEnv(["PATH+DC=${dcHome}/bin"]) {
+            sh '''
+              echo "🔍 Running OWASP Dependency Check..."
+              dependency-check.sh \
+                --project GestionAbsenceApp \
+                --scan . \
+                --format HTML \
+                --out owasp-report
+            '''
+          }
         }
       }
     }
