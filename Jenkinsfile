@@ -14,21 +14,20 @@ pipeline {
     }
 
     stage('SonarQube Scan') {
-      steps {
-        withSonarQubeEnv('SonarQube-Server') {         // SonarQube server name from Jenkins config
-          dir('back_end') {
-            sh '''
-              ${SONAR_SCANNER_HOME}/bin/sonar-scanner \
-                -Dsonar.projectKey=FlaskApp \
-                -Dsonar.sources=. \
-                -Dsonar.inclusions=**/*.py \
-                -Dsonar.language=py \
-                -Dsonar.python.version=3 \
-                -Dsonar.host.url=$SONAR_HOST_URL \
-                -Dsonar.login=$SONAR_TOKEN
-            '''
-          }
-        }
+  environment {
+    SONAR_TOKEN = credentials('sonarqube-token')
+  }
+  steps {
+    withSonarQubeEnv('SonarQube-Server') {
+      dir('back_end') {
+        sh '''
+          ${SONAR_SCANNER_HOME}/bin/sonar-scanner \
+            -Dsonar.projectKey=FlaskApp \
+            -Dsonar.sources=. \
+            -Dsonar.inclusions=**/*.py \
+            -Dsonar.language=py \
+            -Dsonar.login=$SONAR_TOKEN
+        '''
       }
     }
   }
