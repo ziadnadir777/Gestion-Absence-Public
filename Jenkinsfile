@@ -1,38 +1,32 @@
 pipeline {
   agent any
+
   tools {
-    nodejs 'node-18'
-  }
-  environment {
-    SONAR_TOKEN = credentials('sonarqube-token')        // Your Sonar token ID in Jenkins credentials
-    SONAR_SCANNER = tool name: 'SonarScanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+    nodejs 'node-18' // Defined in Jenkins global config
   }
 
-  triggers {
-    githubPush()
+  environment {
+    SONAR_SCANNER_HOME = tool 'SonarScanner' // Defined in Jenkins global config
+    SONAR_TOKEN = credentials('SONAR_TOKEN') // Your SonarQube token ID in Jenkins credentials
   }
 
   options {
-    skipDefaultCheckout true
     timestamps()
   }
 
   stages {
-
     stage('Checkout Main Branch') {
-      when {
-        branch 'main'
-      }
       steps {
-        checkout scm
+        checkout([$class: 'GitSCM',
+          branches: [[name: '*/main']],
+          userRemoteConfigs: [[
+            url: 'https://github.com/Abdoun1m/Gestion-Absence.git',
+            credentialsId: 'Abdounm1'
+          ]]
+        ])
       }
     }
-    stage('Check Node') {
-      steps {
-        sh 'node -v'
-        sh 'npm -v'
-      }
-    }
+
     stage('Verify Workspace') {
       steps {
         sh '''
@@ -58,15 +52,12 @@ pipeline {
     }
 
     stage('Sonar Analysis') {
-      when {
-        branch 'main'
-      }
       steps {
         withSonarQubeEnv('SonarQube-Server') {
-          dir("${env.WORKSPACE}") {
+          dir('.') {
             sh '''
               echo "🚀 Running SonarQube Scanner..."
-              ${SONAR_SCANNER}/bin/sonar-scanner -Dsonar.login=$SONAR_TOKEN
+              ${SONAR_SCANNER_HOME}/bin/sonar-scanner -Dsonar.login=$SONAR_TOKEN
             '''
           }
         }
@@ -75,8 +66,8 @@ pipeline {
   }
 
   post {
-    always {
-      echo '✅ Pipeline finished.'
+    success {
+      echo '✅ Pipeline finished successfully.'
     }
     failure {
       echo '❌ Pipeline failed.'
