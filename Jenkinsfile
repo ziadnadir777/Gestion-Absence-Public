@@ -3,6 +3,7 @@ pipeline {
 
   tools {
     nodejs 'node-18' // Defined in Jenkins global config
+    sonarRunner 'SonarScanner'
   }
 
   environment {
@@ -63,14 +64,17 @@ pipeline {
         }
       }
     }
+    stage('Sonar Quality Gate') {
+      steps {
+        timeout(time: 2, unit: 'MINUTES') {
+          waitForQualityGate abortPipeline: true
+        }
+      }
   }
 
   post {
-    success {
-      echo '✅ Pipeline finished successfully.'
-    }
-    failure {
-      echo '❌ Pipeline failed.'
+    always {
+      echo '✅ Pipeline finished.'
     }
   }
 }
