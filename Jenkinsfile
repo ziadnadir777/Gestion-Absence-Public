@@ -19,12 +19,14 @@ stage('SonarQube Scan') {
   steps {
     withSonarQubeEnv('SonarQube-Server') {
       sh '''
-        ${SONAR_SCANNER_HOME}/bin/sonar-scanner \
-        -Dsonar.projectKey=FullStackApp \
-        -Dsonar.sources=. \
-        -Dsonar.inclusions=./Back_end/*.py,./Front_end/**/*.ts,./Front_end/**/*.tsx \
-        -Dsonar.host.url=$SONAR_HOST_URL \
-        -Dsonar.login=$SONAR_TOKEN
+        echo "📁 Current directory content:"
+        ls -la
+
+        echo "📄 Contents of sonar-project.properties:"
+        cat sonar-project.properties || echo "❌ sonar-project.properties not found!"
+
+        echo "🚀 Running Sonar Scanner..."
+        ${SONAR_SCANNER_HOME}/bin/sonar-scanner -Dsonar.login=$SONAR_TOKEN
       '''
     }
   }
