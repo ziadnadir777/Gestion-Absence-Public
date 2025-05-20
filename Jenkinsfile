@@ -8,7 +8,7 @@ pipeline {
   stages {
     stage('Checkout') {
       steps {
-        git credentialsId: 'Abdounm1', url: 'https://github.com/Abdoun1m/Gestion-Absence.git'
+        git credentialsId: 'github_token', url: 'https://github.com/Abdoun1m/Gestion-Absence.git'
       }
     }
 
