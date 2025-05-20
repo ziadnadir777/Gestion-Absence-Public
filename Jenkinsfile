@@ -22,7 +22,7 @@ stage('SonarQube Scan') {
         ${SONAR_SCANNER_HOME}/bin/sonar-scanner \
         -Dsonar.projectKey=FullStackApp \
         -Dsonar.sources=. \
-        -Dsonar.inclusions=Back_end/**/*.py,Front_end/**/*.ts,Front_end/**/*.tsx \
+        -Dsonar.inclusions=Back_end/*.py,Front_end/**/*.ts,Front_end/**/*.tsx \
         -Dsonar.host.url=$SONAR_HOST_URL \
         -Dsonar.login=$SONAR_TOKEN
       '''
