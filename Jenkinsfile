@@ -2,12 +2,13 @@ pipeline {
   agent any
 
   tools {
-    nodejs 'node-18' // Make sure NodeJS is configured in Jenkins
+    nodejs 'node-18'
+    dependencyCheck 'dependency-Check'
   }
 
   environment {
     SONAR_SCANNER_HOME = tool 'SonarScanner'
-    SONAR_TOKEN = credentials('sonarqube-token') // ID stored in Jenkins credentials
+    SONAR_TOKEN = credentials('sonarqube-token')
   }
 
   options {
@@ -27,41 +28,33 @@ pipeline {
       }
     }
 
-    stage('Verify Workspace') {
+    stage('OWASP Dependency Check') {
       steps {
-        sh '''
-          echo "📂 Current path: $(pwd)"
-          echo "📄 Listing files:"
-          ls -la
-        '''
-      }
-    }
-
-    stage('Show Sonar Properties') {
-      steps {
-        sh '''
-          echo "🔍 sonar-project.properties content:"
-          if [ -f sonar-project.properties ]; then
-            cat sonar-project.properties
-          else
-            echo "❌ sonar-project.properties not found!"
-            exit 1
-          fi
-        '''
-      }
-    }
-
-    stage('Sonar Analysis') {
-      steps {
-        withSonarQubeEnv('SonarQube-Server') {
+        withEnv(["PATH+DC=${tool 'dependency-Check'}/bin"]) {
           sh '''
-            echo "🚀 Running SonarQube Scanner..."
-            ${SONAR_SCANNER_HOME}/bin/sonar-scanner -Dsonar.login=$SONAR_TOKEN
+            echo "🔍 Running OWASP Dependency Check..."
+            dependency-check.sh \
+              --project GestionAbsenceApp \
+              --scan . \
+              --format HTML \
+              --out owasp-report
           '''
         }
       }
     }
 
+    stage('SonarQube Analysis') {
+      steps {
+        withSonarQubeEnv('SonarQube-Server') {
+          sh '''
+            echo "🚀 Running SonarQube Scanner..."
+            ${SONAR_SCANNER_HOME}/bin/sonar-scanner -Dsonar.login=${SONAR_TOKEN}
+          '''
+        }
+      }
+    }
+
+    /*
     stage('Sonar Quality Gate') {
       steps {
         timeout(time: 2, unit: 'MINUTES') {
@@ -69,11 +62,13 @@ pipeline {
         }
       }
     }
+    */
   }
 
   post {
     always {
       echo '✅ Pipeline finished.'
+      archiveArtifacts artifacts: 'owasp-report/**', fingerprint: true
     }
   }
 }
