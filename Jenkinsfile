@@ -14,27 +14,10 @@ pipeline {
     }
 
    stage('SonarQube Scan') {
-  environment {
-    SONAR_TOKEN = credentials('sonarqube-token')
-  }
   steps {
     withSonarQubeEnv('SonarQube-Server') {
       dir('Back_end') {
-        sh '''
-          echo "--- WORKSPACE CONTENTS ---"
-          ls -R
-          echo "--- PYTHON FILES FOUND ---"
-          find . -name "*.py"
-
-          ${SONAR_SCANNER_HOME}/bin/sonar-scanner \
-            -Dsonar.projectKey=FlaskApp \
-            -Dsonar.sources=. \
-            -Dsonar.inclusions=**/*.py \
-            -Dsonar.language=py \
-            -Dsonar.python.version=3 \
-            -Dsonar.host.url=$SONAR_HOST_URL \
-            -Dsonar.login=$SONAR_TOKEN
-        '''
+        sh '${SONAR_SCANNER_HOME}/bin/sonar-scanner'
       }
     }
   }
