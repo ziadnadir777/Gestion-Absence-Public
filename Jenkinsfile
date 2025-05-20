@@ -14,11 +14,12 @@ pipeline {
     }
 
    stage('SonarQube Scan') {
+  environment {
+    SONAR_TOKEN = credentials('sonarqube-token')
+  }
   steps {
     withSonarQubeEnv('SonarQube-Server') {
-      dir('Back_end') {
-        sh '${SONAR_SCANNER_HOME}/bin/sonar-scanner'
-      }
+      sh '${SONAR_SCANNER_HOME}/bin/sonar-scanner'
     }
   }
 }
