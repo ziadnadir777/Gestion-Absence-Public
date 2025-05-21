@@ -2,7 +2,5 @@ Flask
 pytest
 flake8
 gunicorn
-hashlib
-json
-datetime
-sqlite3
+psycopg2-binary
+Flask-cors

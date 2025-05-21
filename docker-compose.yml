@@ -1,0 +1,36 @@
+services:
+  backend:
+    build:
+      context: ./Back_end
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+    depends_on:
+      - db
+    networks:
+      - net
+
+  db:
+    image: postgres:14
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - net
+
+networks:
+  net:
+
+volumes:
+  pgdata:
