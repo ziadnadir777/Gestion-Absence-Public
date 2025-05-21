@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://192.168.1.92:5000/api';
+const API_BASE_URL = 'http://localhost:5000/api';
 
 export const api = {
   login: async (email: string, password: string) => {

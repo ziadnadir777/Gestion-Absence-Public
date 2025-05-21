@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from flasgger import Swagger
 from flask_cors import CORS
 import psycopg2
 import hashlib
@@ -7,6 +8,7 @@ import os
 
 app = Flask(__name__)
 CORS(app)
+swagger = Swagger(app)
 
 DB_CONFIG = {
     'dbname': os.getenv('DB_NAME', 'attendance'),

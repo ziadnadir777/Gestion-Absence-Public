@@ -4,3 +4,4 @@ flake8
 gunicorn
 psycopg2-binary
 Flask-cors
+flasgger
