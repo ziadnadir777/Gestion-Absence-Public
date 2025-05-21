@@ -3,8 +3,8 @@ services:
     build:
       context: ./Back_end
       dockerfile: Dockerfile
-    ports:
-      - "5000:5000"
+    expose:
+      - "5000"
     environment:
       DB_NAME: ${DB_NAME}
       DB_USER: ${DB_USER}
@@ -13,6 +13,20 @@ services:
       DB_PORT: ${DB_PORT}
     depends_on:
       - db
+    networks:
+      - net
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./certs/absence.crt:/etc/ssl/certs/absence.crt
+      - ./certs/absence.key:/etc/ssl/private/absence.key
+    depends_on:
+      - backend
     networks:
       - net
 

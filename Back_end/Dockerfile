@@ -14,6 +14,6 @@ COPY wait-for-it.sh entrypoint.sh ./
 RUN chmod +x wait-for-it.sh entrypoint.sh
 
 # Lancer le script d’entrée
-CMD ["./entrypoint.sh"]
+ENTRYPOINT ["./entrypoint.sh"]
 
 EXPOSE 5000
