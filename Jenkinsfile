@@ -28,7 +28,7 @@ pipeline {
         ])
       }
     }
-/*
+
     stage('OWASP Dependency Check') {
       steps {
         script {
@@ -48,7 +48,7 @@ pipeline {
           }
         }
       }
-    }*/
+    }
 
     stage('SonarQube Analysis') {
       steps {
@@ -60,8 +60,8 @@ pipeline {
         }
       }
     }
-/*
-    
+
+    /*
     stage('Sonar Quality Gate') {
       steps {
         timeout(time: 2, unit: 'MINUTES') {

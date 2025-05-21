@@ -1,14 +1,10 @@
 from flask import Flask, request, jsonify
-from flask_cors import CORS
-
 import sqlite3
 import hashlib
 import datetime
 import json
 
 app = Flask(__name__)
-CORS(app)
-
 
 # Fonction pour initialiser la base de données SQLite
 def init_db():
