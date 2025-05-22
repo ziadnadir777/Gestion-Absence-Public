@@ -13,6 +13,7 @@ pipeline {
 
     IMAGE_NAME = "gestion-absence-backend"
     IMAGE_TAG = "${BUILD_NUMBER}"
+    PATH = "${env.HOME}/bin:${env.PATH}"
   }
 
   options {
