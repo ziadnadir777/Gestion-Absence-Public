@@ -148,20 +148,12 @@ pipeline {
   }
 
   post {
-    success {
-      echo '✅ Pipeline finished successfully.'
-      sh '''
-        if [ -d owasp-report ]; then
-          echo "📦 Archiving OWASP report..."
-        else
-          echo "⚠️ No OWASP report to archive."
-          exit 0
-        fi
-      '''
-      archiveArtifacts artifacts: 'owasp-report/**', fingerprint: true
+      success {
+        echo '✅ Pipeline finished successfully.'
+        /*archiveArtifacts artifacts: 'owasp-report/**', fingerprint: true*/
+      }
+      failure {
+        echo '❌ Pipeline failed. No artifacts to archive.'
+      }
     }
-    failure {
-      echo '❌ Pipeline failed. No artifacts to archive.'
-    }
-}
 }
