@@ -1,7 +1,8 @@
 FROM python:3.10-bookworm
 
 # Installer les dépendances système
-RUN apt-get update && apt-get install -y postgresql-client netcat-openbsd dos2unix
+RUN apt-get update -o Acquire::Check-Valid-Until=false && \
+    apt-get install -y postgresql-client netcat-openbsd dos2unix
 
 
 WORKDIR /app
