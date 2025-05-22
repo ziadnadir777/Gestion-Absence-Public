@@ -15,11 +15,11 @@ pipeline {
     IMAGE_TAG = "${BUILD_NUMBER}"
     DOCKER_COMPOSE = "${env.HOME}/bin/docker-compose"
     PATH = "${env.HOME}/bin:${env.PATH}"
-    DB_HOST=db
-    DB_PORT=5432
-    DB_NAME=attendance
-    DB_USER=admin
-    DB_PASS=admin123
+    DB_HOST='db'
+    DB_PORT='5432'
+    DB_NAME='attendance'
+    DB_USER='admin'
+    DB_PASS='admin123'
   }
 
   options {
