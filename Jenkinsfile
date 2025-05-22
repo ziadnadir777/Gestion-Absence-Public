@@ -83,9 +83,12 @@ pipeline {
     stage('Build and Run with Docker Compose') {
       steps {
         sh '''
-          echo "🐳 Running docker-compose up --build with .env..."
-
-          $ docker compose up --build -d
+          echo "🐳 Starting Docker Compose with environment:"
+          echo "DB_HOST=${DB_HOST}"
+          echo "DB_PORT=${DB_PORT}"
+          echo "DB_NAME=${DB_NAME}"
+          
+          docker compose up --build -d
         '''
       }
     }
