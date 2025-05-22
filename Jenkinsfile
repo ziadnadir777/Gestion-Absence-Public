@@ -87,8 +87,8 @@ pipeline {
           echo "DB_HOST=${DB_HOST}"
           echo "DB_PORT=${DB_PORT}"
           echo "DB_NAME=${DB_NAME}"
-          
-          docker compose up --build -d
+
+          docker-compose up --build -d
         '''
       }
     }
