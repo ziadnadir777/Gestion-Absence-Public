@@ -144,7 +144,7 @@ pipeline {
         )]) {
           sh '''
             echo "🔐 Logging in to Nexus Docker registry..."
-            echo "$NEXUS_PASS" | docker login $NEXUS_REGISTRY -u "$NEXUS_USER" --password-stdin
+            docker login $NEXUS_REGISTRY -u "$NEXUS_USER" -p "$NEXUS_PASS"
 
             echo "🏷️ Tagging image for Nexus..."
             docker tag $IMAGE_NAME:$IMAGE_TAG $NEXUS_REGISTRY/absence-backend:$IMAGE_TAG
