@@ -87,7 +87,7 @@ pipeline {
         sh '''
           echo "🐳 Running docker-compose up --build with .env..."
 
-          $${DOCKER_COMPOSE} up --build -d
+          ${DOCKER_COMPOSE} up --build -d
         '''
       }
     }
