@@ -3,6 +3,7 @@ pipeline {
 
   tools {
     nodejs 'node-18'
+    dockerTool 'docker'
   }
 
   environment {
