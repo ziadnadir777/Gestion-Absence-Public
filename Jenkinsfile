@@ -81,7 +81,12 @@ pipeline {
       steps {
         sh '''
           echo "🐳 Running docker-compose up --build with .env..."
-          docker-compose --env-file .env up --build -d
+          if [ ! -f ".env" ]; then
+            echo "⚠️ .env file not found. Creating a default one..."
+            echo "ENV=dev" > .env
+          fi
+
+          ${DOCKER_COMPOSE} --env-file .env up --build -d
         '''
       }
     }
