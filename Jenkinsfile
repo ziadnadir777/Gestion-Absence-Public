@@ -90,7 +90,7 @@ pipeline {
         }
       }
     }
-    */
+    
     stage('Build and Run with Docker Compose') {
       steps {
         sh '''
@@ -129,6 +129,20 @@ pipeline {
     stage('Shutdown Docker Containers') {
       steps {
         sh 'docker compose down'
+      }
+    }*/
+    stage('Docker Build') {
+      steps {
+        sh '''
+          echo "🛠️ Building Docker image for backend..."
+          docker build -t $IMAGE_NAME:$IMAGE_TAG ./Back_end
+
+          echo "🏷️ Tagging latest..."
+          docker tag $IMAGE_NAME:$IMAGE_TAG $IMAGE_NAME:latest
+
+          echo "✅ Docker image built successfully."
+          docker images $IMAGE_NAME
+        '''
       }
     }
   }
