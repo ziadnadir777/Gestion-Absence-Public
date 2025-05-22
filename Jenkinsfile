@@ -10,7 +10,7 @@ pipeline {
     SONAR_SCANNER_HOME = tool 'SonarScanner'
     SONAR_TOKEN = credentials('sonarqube-token')
     NVD_API_KEY = credentials('nvd-api-key')
-
+    DOCKER_COMPOSE = "${env.HOME}/bin/docker-compose"
     IMAGE_NAME = "gestion-absence-backend"
     IMAGE_TAG = "${BUILD_NUMBER}"
     DB_HOST='db'
@@ -25,6 +25,17 @@ pipeline {
   }
 
   stages {
+    stage('Test Docker Compose') {
+      steps {
+        sh '''
+          echo "🔍 Verifying docker-compose execution..."
+          ${DOCKER_COMPOSE} version || {
+            echo "❌ docker-compose failed to run"
+            exit 1
+          }
+        '''
+      }
+    }
     stage('Checkout Main Branch') {
       steps {
         checkout([$class: 'GitSCM',
@@ -88,7 +99,7 @@ pipeline {
           echo "DB_PORT=${DB_PORT}"
           echo "DB_NAME=${DB_NAME}"
 
-          docker-compose up --build -d
+          ${DOCKER_COMPOSE} up --build -d
         '''
       }
     }
