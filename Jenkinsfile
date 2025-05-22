@@ -13,8 +13,6 @@ pipeline {
 
     IMAGE_NAME = "gestion-absence-backend"
     IMAGE_TAG = "${BUILD_NUMBER}"
-    DOCKER_COMPOSE = "${env.HOME}/bin/docker-compose"
-    PATH = "${env.HOME}/bin:${env.PATH}"
     DB_HOST='db'
     DB_PORT='5432'
     DB_NAME='attendance'
@@ -87,7 +85,7 @@ pipeline {
         sh '''
           echo "🐳 Running docker-compose up --build with .env..."
 
-          ${DOCKER_COMPOSE} up --build -d
+          $ docker compose up --build -d
         '''
       }
     }
@@ -107,7 +105,7 @@ pipeline {
 
     stage('Shutdown Docker Containers') {
       steps {
-        sh '${DOCKER_COMPOSE} down'
+        sh 'docker compose down'
       }
     }
   }
