@@ -19,12 +19,10 @@ pipeline {
 
   options {
     timestamps()
-    skipDefaultCheckout()
-    disableConcurrentBuilds()
   }
 
   stages {
-    stage('📥 Checkout Source Code') {
+    stage('Checkout Main Branch') {
       steps {
         checkout([$class: 'GitSCM',
           branches: [[name: '*/main']],
@@ -36,7 +34,30 @@ pipeline {
       }
     }
 
-    stage('🔎 SonarQube Analysis') {
+    /*
+    stage('OWASP Dependency Check') {
+      steps {
+        script {
+          def dcHome = tool name: 'dependency-Check', type: 'org.jenkinsci.plugins.DependencyCheck.tools.DependencyCheckInstallation'
+          withEnv(["PATH+DC=${dcHome}/bin"]) {
+            sh '''
+              echo "🔍 Running OWASP Dependency Check..."
+              dependency-check.sh \
+                --project GestionAbsenceApp \
+                --scan Front_end/package.json \
+                --scan Back_end/requirements.txt \
+                --format HTML \
+                --out owasp-report \
+                --nvdApiKey ${NVD_API_KEY} \
+                --data /var/jenkins_home/odc-data
+            '''
+          }
+        }
+      }
+    }
+    */
+
+    stage('SonarQube Analysis') {
       steps {
         withSonarQubeEnv('SonarQube-Server') {
           sh '''
@@ -47,46 +68,29 @@ pipeline {
       }
     }
 
-    stage('⚙️ Install Docker Compose') {
+    /*
+    stage('Sonar Quality Gate') {
       steps {
-        sh '''
-          echo "⚙ Installing Docker Compose (if missing)..."
-          COMPOSE_VERSION=2.24.6
-          mkdir -p $HOME/bin
-
-          if [ ! -f "$HOME/bin/docker-compose" ]; then
-            curl -sSL "https://github.com/docker/compose/releases/download/v$COMPOSE_VERSION/docker-compose-$(uname -s)-$(uname -m)" -o $HOME/bin/docker-compose
-            chmod +x $HOME/bin/docker-compose
-          fi
-
-          ${DOCKER_COMPOSE} version
-        '''
+        timeout(time: 2, unit: 'MINUTES') {
+          waitForQualityGate abortPipeline: true
+        }
       }
     }
-
-    stage('🐳 Build and Run Services') {
+    */
+    stage('Build and Run with Docker Compose') {
       steps {
         sh '''
           echo "🐳 Running docker-compose up --build with .env..."
-
-          if [ ! -f ".env" ]; then
-            echo "⚠️ .env file not found. Creating default .env..."
-            echo "ENV=dev" > .env
-          fi
 
           ${DOCKER_COMPOSE} --env-file .env up --build -d
         '''
       }
     }
 
-    stage('🏷️ Tag Docker Image') {
+    stage('Tag Backend Image') {
       steps {
         script {
-          def imageId = sh(
-            script: "docker images --filter=reference='*backend' --format '{{.ID}}' | head -n 1",
-            returnStdout: true
-          ).trim()
-
+          def imageId = sh(script: "docker images --filter=reference='*backend' --format '{{.ID}}' | head -n 1", returnStdout: true).trim()
           sh """
             echo "🏷️ Tagging backend image..."
             docker tag $imageId $IMAGE_NAME:$IMAGE_TAG
@@ -96,26 +100,20 @@ pipeline {
       }
     }
 
-    stage('🧹 Teardown Containers') {
+    stage('Shutdown Docker Containers') {
       steps {
-        sh '''
-          echo "🧹 Shutting down Docker containers..."
-          ${DOCKER_COMPOSE} down
-        '''
+        sh '${DOCKER_COMPOSE} down'
       }
     }
   }
 
   post {
     always {
-      echo '✅ Pipeline completed (success or failure).'
+      echo '✅ Pipeline finished.'
       archiveArtifacts artifacts: 'owasp-report/**', fingerprint: true
     }
     success {
-      echo "🎉 App built and image tagged successfully."
-    }
-    failure {
-      echo "❌ Build failed. Please check the logs for details."
+      echo "🎉 App built and backend image tagged successfully using docker-compose."
     }
   }
 }
