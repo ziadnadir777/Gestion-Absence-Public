@@ -1,10 +1,6 @@
 services:
   backend:
-    build:
-      context: ./Back_end
-      dockerfile: Dockerfile
-    expose:
-      - "5000"
+    image: 192.168.56.103:8082/absence-backend:latest
     environment:
       DB_NAME: ${DB_NAME}
       DB_USER: ${DB_USER}
