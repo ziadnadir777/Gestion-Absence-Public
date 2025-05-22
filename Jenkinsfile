@@ -13,6 +13,7 @@ pipeline {
 
     IMAGE_NAME = "gestion-absence-backend"
     IMAGE_TAG = "${BUILD_NUMBER}"
+    DOCKER_COMPOSE = "${env.HOME}/bin/docker-compose"
     PATH = "${env.HOME}/bin:${env.PATH}"
   }
 
@@ -76,7 +77,24 @@ pipeline {
       }
     }
     */
+
+    stage('Install Docker Compose') {
+      steps {
+        sh '''
+          echo "⚙ Installing Docker Compose locally..."
+          COMPOSE_VERSION=2.24.6
+          mkdir -p $HOME/bin
+
+          if [ ! -f "$HOME/bin/docker-compose" ]; then
+            curl -L "https://github.com/docker/compose/releases/download/v$COMPOSE_VERSION/docker-compose-$(uname -s)-$(uname -m)" -o $HOME/bin/docker-compose
+            chmod +x $HOME/bin/docker-compose
+          fi
+
+          $HOME/bin/docker-compose version
+        '''
+      }
     }
+
     stage('Build and Run with Docker Compose') {
       steps {
         sh '''
@@ -106,7 +124,7 @@ pipeline {
 
     stage('Shutdown Docker Containers') {
       steps {
-        sh 'docker-compose down'
+        sh '${DOCKER_COMPOSE} down'
       }
     }
   }
