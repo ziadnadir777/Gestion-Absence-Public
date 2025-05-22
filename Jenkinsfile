@@ -15,6 +15,11 @@ pipeline {
     IMAGE_TAG = "${BUILD_NUMBER}"
     DOCKER_COMPOSE = "${env.HOME}/bin/docker-compose"
     PATH = "${env.HOME}/bin:${env.PATH}"
+    DB_HOST=db
+    DB_PORT=5432
+    DB_NAME=attendance
+    DB_USER=admin
+    DB_PASS=admin123
   }
 
   options {
@@ -82,7 +87,7 @@ pipeline {
         sh '''
           echo "🐳 Running docker-compose up --build with .env..."
 
-          ${DOCKER_COMPOSE} --env-file .env up --build -d
+          $${DOCKER_COMPOSE} up --build -d
         '''
       }
     }
