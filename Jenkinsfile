@@ -116,6 +116,15 @@ pipeline {
         }
       }
     }
+    stage('🩺 Health Check') {
+      steps {
+        sh '''
+          echo "⏳ Waiting for backend to start..."
+          sleep 5
+          curl -f http://localhost/api/health || exit 1
+        '''
+      }
+    }
 
     stage('Shutdown Docker Containers') {
       steps {
