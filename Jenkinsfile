@@ -133,7 +133,34 @@ pipeline {
       }
     }
   }
+    stage('Push Backend Image to Nexus') {
+      environment {
+        NEXUS_REGISTRY = '192.168.56.103:8082'
+      }
+      steps {
+        withCredentials([usernamePassword(
+          credentialsId: 'nexus-docker-creds',
+          usernameVariable: 'NEXUS_USER',
+          passwordVariable: 'NEXUS_PASS'
+        )]) {
+          sh '''
+            echo "🔐 Logging in to Nexus Docker registry..."
+            echo "$NEXUS_PASS" | docker login $NEXUS_REGISTRY -u "$NEXUS_USER" --password-stdin
 
+            echo "🏷️ Tagging image for Nexus..."
+            docker tag $IMAGE_NAME:$IMAGE_TAG $NEXUS_REGISTRY/absence-backend:$IMAGE_TAG
+            docker tag $IMAGE_NAME:$IMAGE_TAG $NEXUS_REGISTRY/absence-backend:latest
+
+            echo "📤 Pushing image to Nexus..."
+            docker push $NEXUS_REGISTRY/absence-backend:$IMAGE_TAG
+            docker push $NEXUS_REGISTRY/absence-backend:latest
+
+            echo "🚪 Logging out from Nexus..."
+            docker logout $NEXUS_REGISTRY
+          '''
+        }
+      }
+}
   post {
       success {
         echo '✅ Pipeline finished successfully.'
