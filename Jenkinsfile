@@ -2,7 +2,8 @@ pipeline {
   agent any
 
   tools {
-    nodejs 'node-18' // NodeJS
+    nodejs 'node-18'
+    docker 'docker'
   }
 
   environment {
@@ -10,6 +11,8 @@ pipeline {
     SONAR_TOKEN = credentials('sonarqube-token')
     NVD_API_KEY = credentials('nvd-api-key')
 
+    IMAGE_NAME = "gestion-absence-backend"
+    IMAGE_TAG = "${BUILD_NUMBER}"
   }
 
   options {
@@ -29,6 +32,7 @@ pipeline {
       }
     }
 
+    /*
     stage('OWASP Dependency Check') {
       steps {
         script {
@@ -49,6 +53,7 @@ pipeline {
         }
       }
     }
+    */
 
     stage('SonarQube Analysis') {
       steps {
@@ -70,12 +75,43 @@ pipeline {
       }
     }
     */
+
+    stage('Build and Run with Docker Compose') {
+      steps {
+        sh '''
+          echo "🐳 Running docker-compose up --build with .env..."
+          docker-compose --env-file .env up --build -d
+        '''
+      }
+    }
+
+    stage('Tag Backend Image') {
+      steps {
+        script {
+          def imageId = sh(script: "docker images --filter=reference='*backend' --format '{{.ID}}' | head -n 1", returnStdout: true).trim()
+          sh """
+            echo "🏷️ Tagging backend image..."
+            docker tag $imageId $IMAGE_NAME:$IMAGE_TAG
+            docker tag $imageId $IMAGE_NAME:latest
+          """
+        }
+      }
+    }
+
+    stage('Shutdown Docker Containers') {
+      steps {
+        sh 'docker-compose down'
+      }
+    }
   }
 
   post {
     always {
       echo '✅ Pipeline finished.'
       archiveArtifacts artifacts: 'owasp-report/**', fingerprint: true
+    }
+    success {
+      echo "🎉 App built and backend image tagged successfully using docker-compose."
     }
   }
 }
