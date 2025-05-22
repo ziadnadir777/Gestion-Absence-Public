@@ -159,7 +159,7 @@ pipeline {
           '''
         }
       }
-}
+}}
   post {
       success {
         echo '✅ Pipeline finished successfully.'
@@ -169,5 +169,4 @@ pipeline {
         echo '❌ Pipeline failed. No artifacts to archive.'
       }
     }
-}
 }
