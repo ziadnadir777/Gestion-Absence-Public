@@ -19,10 +19,12 @@ pipeline {
 
   options {
     timestamps()
+    skipDefaultCheckout()
+    disableConcurrentBuilds()
   }
 
   stages {
-    stage('Checkout Main Branch') {
+    stage('📥 Checkout Source Code') {
       steps {
         checkout([$class: 'GitSCM',
           branches: [[name: '*/main']],
@@ -34,30 +36,7 @@ pipeline {
       }
     }
 
-    /*
-    stage('OWASP Dependency Check') {
-      steps {
-        script {
-          def dcHome = tool name: 'dependency-Check', type: 'org.jenkinsci.plugins.DependencyCheck.tools.DependencyCheckInstallation'
-          withEnv(["PATH+DC=${dcHome}/bin"]) {
-            sh '''
-              echo "🔍 Running OWASP Dependency Check..."
-              dependency-check.sh \
-                --project GestionAbsenceApp \
-                --scan Front_end/package.json \
-                --scan Back_end/requirements.txt \
-                --format HTML \
-                --out owasp-report \
-                --nvdApiKey ${NVD_API_KEY} \
-                --data /var/jenkins_home/odc-data
-            '''
-          }
-        }
-      }
-    }
-    */
-
-    stage('SonarQube Analysis') {
+    stage('🔎 SonarQube Analysis') {
       steps {
         withSonarQubeEnv('SonarQube-Server') {
           sh '''
@@ -68,39 +47,30 @@ pipeline {
       }
     }
 
-    /*
-    stage('Sonar Quality Gate') {
-      steps {
-        timeout(time: 2, unit: 'MINUTES') {
-          waitForQualityGate abortPipeline: true
-        }
-      }
-    }
-    */
-
-    stage('Install Docker Compose') {
+    stage('⚙️ Install Docker Compose') {
       steps {
         sh '''
-          echo "⚙ Installing Docker Compose locally..."
+          echo "⚙ Installing Docker Compose (if missing)..."
           COMPOSE_VERSION=2.24.6
           mkdir -p $HOME/bin
 
           if [ ! -f "$HOME/bin/docker-compose" ]; then
-            curl -L "https://github.com/docker/compose/releases/download/v$COMPOSE_VERSION/docker-compose-$(uname -s)-$(uname -m)" -o $HOME/bin/docker-compose
+            curl -sSL "https://github.com/docker/compose/releases/download/v$COMPOSE_VERSION/docker-compose-$(uname -s)-$(uname -m)" -o $HOME/bin/docker-compose
             chmod +x $HOME/bin/docker-compose
           fi
 
-          $HOME/bin/docker-compose version
+          ${DOCKER_COMPOSE} version
         '''
       }
     }
 
-    stage('Build and Run with Docker Compose') {
+    stage('🐳 Build and Run Services') {
       steps {
         sh '''
           echo "🐳 Running docker-compose up --build with .env..."
+
           if [ ! -f ".env" ]; then
-            echo "⚠️ .env file not found. Creating a default one..."
+            echo "⚠️ .env file not found. Creating default .env..."
             echo "ENV=dev" > .env
           fi
 
@@ -109,10 +79,14 @@ pipeline {
       }
     }
 
-    stage('Tag Backend Image') {
+    stage('🏷️ Tag Docker Image') {
       steps {
         script {
-          def imageId = sh(script: "docker images --filter=reference='*backend' --format '{{.ID}}' | head -n 1", returnStdout: true).trim()
+          def imageId = sh(
+            script: "docker images --filter=reference='*backend' --format '{{.ID}}' | head -n 1",
+            returnStdout: true
+          ).trim()
+
           sh """
             echo "🏷️ Tagging backend image..."
             docker tag $imageId $IMAGE_NAME:$IMAGE_TAG
@@ -122,20 +96,26 @@ pipeline {
       }
     }
 
-    stage('Shutdown Docker Containers') {
+    stage('🧹 Teardown Containers') {
       steps {
-        sh '${DOCKER_COMPOSE} down'
+        sh '''
+          echo "🧹 Shutting down Docker containers..."
+          ${DOCKER_COMPOSE} down
+        '''
       }
     }
   }
 
   post {
     always {
-      echo '✅ Pipeline finished.'
+      echo '✅ Pipeline completed (success or failure).'
       archiveArtifacts artifacts: 'owasp-report/**', fingerprint: true
     }
     success {
-      echo "🎉 App built and backend image tagged successfully using docker-compose."
+      echo "🎉 App built and image tagged successfully."
+    }
+    failure {
+      echo "❌ Build failed. Please check the logs for details."
     }
   }
 }
