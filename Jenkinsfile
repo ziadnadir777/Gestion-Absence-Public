@@ -10,7 +10,7 @@ pipeline {
     SONAR_SCANNER_HOME = tool 'SonarScanner'
     SONAR_TOKEN = credentials('sonarqube-token')
     NVD_API_KEY = credentials('nvd-api-key')
-    DOCKER_COMPOSE = "${env.HOME}/bin/docker-compose"
+    DOCKER_COMPOSE = "$/var/jenkins_home/bin/docker-compose"
     IMAGE_NAME = "gestion-absence-backend"
     IMAGE_TAG = "${BUILD_NUMBER}"
     DB_HOST='db'
