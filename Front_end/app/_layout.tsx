@@ -1,13 +1,6 @@
-import { AuthProvider } from '../context/AuthContext';
-import { RefreshProvider } from '../context/RefreshContext';
+// app/_layout.tsx
 import { Slot } from 'expo-router';
 
-export default function RootLayout() {
-  return (
-    <AuthProvider>
-      <RefreshProvider>
-        <Slot />
-      </RefreshProvider>
-    </AuthProvider>
-  );
+export default function Layout() {
+  return <Slot />;
 }

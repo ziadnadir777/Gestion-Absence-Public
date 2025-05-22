@@ -1,17 +1,16 @@
 #!/bin/bash
 
-# Usage: ./wait-for-it.sh host [port] -- command...
-
 set -e
 
 host="$1"
-port="${2:-5432}"  # default to 5432 if not provided
+port="${2:-5432}"  # default port
 shift 2
 cmd="$@"
 
-echo "🔄 Waiting for PostgreSQL at $host:$port..."
+until nc -z "$host" "$port"; do
+  echo "⏳ Waiting for $host:$port..."
+  sleep 1
+done
 
-
-
-echo "✅ PostgreSQL is ready. Executing command..."
+echo "✅ $host:$port is available — executing command..."
 exec $cmd

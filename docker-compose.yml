@@ -42,14 +42,14 @@ services:
       - pgdata:/var/lib/postgresql/data
     networks:
       - net
-  frontend:
-    build:
-      context: ./Front_end
-      dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
-    depends_on:
-      - backend
+  #   frontend:
+  #     build:
+  #       context: ./Front_end
+  #       dockerfile: Dockerfile
+  #     networks:
+  #       - net
+  #     depends_on:
+  #       - backend
 networks:
   net:
 
