@@ -76,21 +76,6 @@ pipeline {
       }
     }
     */
-    stage('Install Docker Compose') {
-      steps {
-        sh '''
-          echo "⚙ Installing Docker Compose locally..."
-          COMPOSE_VERSION=2.24.6
-          mkdir -p $HOME/bin
-
-          curl -L "https://github.com/docker/compose/releases/download/v$COMPOSE_VERSION/docker-compose-$(uname -s)-$(uname -m)" -o $HOME/bin/docker-compose
-          chmod +x $HOME/bin/docker-compose
-
-          export PATH=$HOME/bin:$PATH
-          docker-compose version
-        '''
-        }
-      }
     }
     stage('Build and Run with Docker Compose') {
       steps {
