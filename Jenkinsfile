@@ -80,7 +80,7 @@ pipeline {
       steps {
         sh '''
           echo "🐳 Running docker-compose up --build with .env..."
-          docker-compose --env-file .env up --build -d
+          docker compose --env-file .env up --build -d
         '''
       }
     }
