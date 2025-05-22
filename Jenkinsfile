@@ -125,12 +125,12 @@ pipeline {
   }
 
   post {
-    always {
-      echo '✅ Pipeline finished.'
-      archiveArtifacts artifacts: 'owasp-report/**', fingerprint: true
+      success {
+        echo '✅ Pipeline finished successfully.'
+        archiveArtifacts artifacts: 'owasp-report/**', fingerprint: true
+      }
+      failure {
+        echo '❌ Pipeline failed. No artifacts to archive.'
+      }
     }
-    success {
-      echo "🎉 App built and backend image tagged successfully using docker-compose."
-    }
-  }
 }
