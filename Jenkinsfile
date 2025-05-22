@@ -150,7 +150,7 @@ pipeline {
   post {
       success {
         echo '✅ Pipeline finished successfully.'
-        archiveArtifacts artifacts: 'owasp-report/**', fingerprint: true
+        /*archiveArtifacts artifacts: 'owasp-report/**', fingerprint: true*/
       }
       failure {
         echo '❌ Pipeline failed. No artifacts to archive.'
