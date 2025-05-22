@@ -25,17 +25,6 @@ pipeline {
   }
 
   stages {
-    stage('Test Docker Compose') {
-      steps {
-        sh '''
-          echo "🔍 Verifying docker-compose execution..."
-          ${DOCKER_COMPOSE} version || {
-            echo "❌ docker-compose failed to run"
-            exit 1
-          }
-        '''
-      }
-    }
     stage('Checkout Main Branch') {
       steps {
         checkout([$class: 'GitSCM',
@@ -69,7 +58,6 @@ pipeline {
         }
       }
     }
-    */
 
     stage('SonarQube Analysis') {
       steps {
@@ -82,7 +70,6 @@ pipeline {
       }
     }
 
-    /*
     stage('Sonar Quality Gate') {
       steps {
         timeout(time: 2, unit: 'MINUTES') {
