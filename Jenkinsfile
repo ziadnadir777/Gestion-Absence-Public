@@ -132,7 +132,6 @@ pipeline {
         '''
       }
     }
-  }
     stage('Push Backend Image to Nexus') {
       environment {
         NEXUS_REGISTRY = '192.168.56.103:8082'
