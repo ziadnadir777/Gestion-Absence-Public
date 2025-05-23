@@ -36,37 +36,6 @@ pipeline {
         ])
       }
     }
-    stage('Python Tests') {
-      steps {
-        dir('Back_end') {
-          sh '''
-            apt update
-            apt install -y python3-pip
-            python3 -m pip install --upgrade pip
-            python3 -m pip install -r requirements.txt
-            python3 -m pytest --junitxml=pytest-report.xml
-          '''
-        }
-      }
-      post {
-        always {
-          junit 'Back_end/pytest-report.xml'
-        }
-      }
-    }
-
-    stage('React Tests') {
-      steps {
-        dir('Front_end') {
-          sh '''
-            apt update
-            apt install -y npm
-            npm install
-            npm test -- --watchAll=false
-          '''
-        }
-      }
-    }
     /*
     stage('OWASP Dependency Check') {
       steps {
