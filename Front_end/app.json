@@ -24,7 +24,13 @@
       "typedRoutes": true
     },
     "android": {
-      "package": "com.anonymous.boltexponativewind"
+      "package": "com.anonymous.boltexponativewind",
+  "versionCode": 1,
+  "adaptiveIcon": {
+    "foregroundImage": "./assets/images/icon.png",
+    "backgroundColor": "#ffffff"
+  },
+  "permissions": []
     }
   }
 }
