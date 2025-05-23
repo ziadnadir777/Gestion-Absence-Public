@@ -40,8 +40,8 @@ pipeline {
       steps {
         dir('Back_end') {
           sh '''
-            sudo apt update
-            sudo apt install -y python3-pip
+            apt update
+            apt install -y python3-pip
             python3 -m pip install --upgrade pip
             python3 -m pip install -r requirements.txt
             python3 -m pytest --junitxml=pytest-report.xml
@@ -59,8 +59,8 @@ pipeline {
       steps {
         dir('Front_end') {
           sh '''
-            sudo apt update
-            sudo apt install -y npm
+            apt update
+            apt install -y npm
             npm install
             npm test -- --watchAll=false
           '''
