@@ -36,7 +36,28 @@ pipeline {
         ])
       }
     }
+    stage('Python Tests') {
+      steps {
+        dir('Back_end') {
+          sh 'pip install -r requirements.txt'
+          sh 'pytest --junitxml=pytest-report.xml'
+        }
+      }
+      post {
+        always {
+          junit 'backend/pytest-report.xml'
+        }
+      }
+    }
 
+    stage('React Tests') {
+      steps {
+        dir('Front_end') {
+          sh 'npm install'
+          sh 'npm test -- --watchAll=false'
+        }
+      }
+    }
     /*
     stage('OWASP Dependency Check') {
       steps {
@@ -78,7 +99,7 @@ pipeline {
       }
     }
     
-    stage('Build and Run with Docker Compose') {
+    stage('Build and Run with Docker Compose from nexus') {
       steps {
         sh '''
           echo "🐳 Starting Docker Compose with environment:"
