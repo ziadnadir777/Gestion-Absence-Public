@@ -39,13 +39,18 @@ pipeline {
     stage('Python Tests') {
       steps {
         dir('Back_end') {
-          sh 'pip install -r requirements.txt'
-          sh 'pytest --junitxml=pytest-report.xml'
+          sh '''
+            sudo apt update
+            sudo apt install -y python3-pip
+            python3 -m pip install --upgrade pip
+            python3 -m pip install -r requirements.txt
+            python3 -m pytest --junitxml=pytest-report.xml
+          '''
         }
       }
       post {
         always {
-          junit 'backend/pytest-report.xml'
+          junit 'Back_end/pytest-report.xml'
         }
       }
     }
@@ -53,8 +58,12 @@ pipeline {
     stage('React Tests') {
       steps {
         dir('Front_end') {
-          sh 'npm install'
-          sh 'npm test -- --watchAll=false'
+          sh '''
+            sudo apt update
+            sudo apt install -y npm
+            npm install
+            npm test -- --watchAll=false
+          '''
         }
       }
     }
