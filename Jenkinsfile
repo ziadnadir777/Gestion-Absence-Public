@@ -138,7 +138,7 @@ pipeline {
       steps {
         sh 'docker compose down'
       }
-    }*/
+    }
     stage('Docker Build') {
       steps {
         sh '''
@@ -180,7 +180,7 @@ pipeline {
           '''
         }
       }
-}}
+}*/}
   post {
       success {
         echo '✅ Pipeline finished successfully.'
