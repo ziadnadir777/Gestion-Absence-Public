@@ -1,0 +1,41 @@
+# nginx-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: owasp/modsecurity-crs:nginx
+        ports:
+          - containerPort: 80
+          - containerPort: 443
+        env:
+          - name: DISABLE_TEMPLATE_GENERATION
+            value: "true"
+        volumeMounts:
+          - name: nginx-config
+            mountPath: /etc/nginx/conf.d
+          - name: certs
+            mountPath: /etc/ssl
+          - name: modsecurity
+            mountPath: /etc/modsecurity
+      volumes:
+        - name: nginx-config
+          configMap:
+            name: nginx-conf
+        - name: certs
+          secret:
+            secretName: tls-secret
+        - name: modsecurity
+          configMap:
+            name: modsecurity-conf

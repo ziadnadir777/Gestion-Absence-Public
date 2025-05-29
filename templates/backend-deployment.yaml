@@ -1,0 +1,31 @@
+# backend-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: 192.168.56.103:8082/absence-backend:latest
+        env:
+          - name: DB_NAME
+            value: "absence"
+          - name: DB_USER
+            value: "admin"
+          - name: DB_PASS
+            value: "password"
+          - name: DB_HOST
+            value: "postgres"
+          - name: DB_PORT
+            value: "5432"
+        ports:
+          - containerPort: 5000
