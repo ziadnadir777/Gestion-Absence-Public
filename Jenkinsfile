@@ -39,7 +39,7 @@ environment {
         ])
       }
     }
-    /*
+    
     stage('OWASP Dependency Check') {
       steps {
         script {
@@ -161,7 +161,7 @@ environment {
           '''
         }
       }
-}*/}
+}}
   post {
       success {
         echo '✅ Pipeline finished successfully.'
