@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Gestion des Absences DevSecOps | Absence Management DevSecOps
 
 ## Description | Description
@@ -161,3 +162,6 @@ Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduc
 - Expo team
 - Flask community
 - All contributors
+=======
+# Gestion-Absence-Public
+>>>>>>> 54f7c3e90d9ec84ec4b635b1e42081a337e888e6
