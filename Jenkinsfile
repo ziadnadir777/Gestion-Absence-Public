@@ -6,19 +6,22 @@ pipeline {
     dockerTool 'docker'
   }
 
-  environment {
+environment {
     SONAR_SCANNER_HOME = tool 'SonarScanner'
     SONAR_TOKEN = credentials('sonarqube-token')
     NVD_API_KEY = credentials('nvd-api-key')
     DOCKER_COMPOSE = "/var/jenkins_home/bin/docker-compose"
     IMAGE_NAME = "gestion-absence-backend"
     IMAGE_TAG = "${BUILD_NUMBER}"
-    DB_HOST='db'
-    DB_PORT='5432'
-    DB_NAME='attendance'
-    DB_USER='admin'
-    DB_PASS='admin123'
-  }
+
+    // Database values come from injected env vars (for example from .env file or Jenkins credentials)
+    DB_HOST = "${env.DB_HOST}"
+    DB_PORT = "${env.DB_PORT}"
+    DB_NAME = "${env.DB_NAME}"
+    DB_USER = "${env.DB_USER}"
+    DB_PASS = "${env.DB_PASS}"
+}
+
 
   options {
     timestamps()
